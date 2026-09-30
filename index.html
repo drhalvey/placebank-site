@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en-AU">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B0KKWL1W5Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-B0KKWL1W5Q', { anonymize_ip: true });
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Place Bank · Save the places you want to go</title>
@@ -10,66 +18,94 @@
 <meta property="og:image" content="https://placebank.app/assets/og.jpg">
 <meta property="og:url" content="https://placebank.app/">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F7F1E6">
 <link rel="icon" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 <header class="top"><div class="wrap">
   <a class="brand" href="/"><img src="/assets/icon-512.png" alt="">Place Bank</a>
-  <nav class="links"><a href="#how" class="hide-sm">How it works</a><a href="/support/">Support</a><a href="/privacy/">Privacy</a></nav>
+  <nav class="links"><a href="#how" class="hide-sm">How it works</a><a href="/support/" class="hide-sm">Support</a><a href="#get" class="pill">Get the app</a></nav>
 </div></header>
 
 <main>
 <div class="wrap">
   <div class="hero">
     <div>
-      <h1>Save the places you want to go. Find them when you get there.</h1>
-      <p class="lead">Every restaurant, bar, exhibition and walk you spot in a TikTok, an article or a friend's message, kept on a map and filed by city.</p>
+      <div class="stamp">✈ Now boarding · iPhone</div>
+      <h1>Saw it on TikTok? <span class="hl">Save it.</span> Find it when you land.</h1>
+      <p class="lead">Every restaurant, bar, exhibition and walk you spot in a clip, an article or a mate's message, kept on a map and filed by city.</p>
       <div class="btns">
-        <a class="btn primary" href="/support/#get">Get Place Bank</a>
+        <a class="btn primary" href="#get">Get Place Bank</a>
         <a class="btn ghost" href="#how">How it works</a>
       </div>
-      <p class="note">For iPhone. Free. Now in testing; coming to the App Store.</p>
+      <p class="note">Free. In testing now, coming to the App Store.</p>
     </div>
-    <div class="art"><img src="/assets/traveller.webp" alt="A traveller in a sun hat and sunglasses, checking her phone beside her bags" width="900" height="812"></div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="sun"></div>
+      <img class="traveller" src="/assets/traveller.webp" alt="" width="1000" height="901">
+      <svg class="pin" viewBox="0 0 48 64"><path d="M24 2C12 2 3 11 3 23c0 16 21 38 21 38s21-22 21-38C45 11 36 2 24 2z" fill="#E5652E" stroke="#14262B" stroke-width="3"/><circle cx="24" cy="23" r="8" fill="#FFFBF4" stroke="#14262B" stroke-width="3"/></svg>
+      <div class="phone"><img src="/assets/screens/place-hours.jpg" alt="" width="368" height="800"></div>
+    </div>
   </div>
 </div>
 
+<div class="strip" aria-hidden="true"><div class="track">
+  <span>TikTok</span><span>Instagram</span><span>Google Maps links</span><span>Articles</span><span>Screenshots</span><span>A text from a mate</span><span>"That new pub on St Georges Tce"</span>
+  <span>TikTok</span><span>Instagram</span><span>Google Maps links</span><span>Articles</span><span>Screenshots</span><span>A text from a mate</span><span>"That new pub on St Georges Tce"</span>
+</div></div>
+
 <section id="how"><div class="wrap">
+  <p class="eyebrow">How it works</p>
   <h2>Share it in. Place Bank does the rest.</h2>
-  <p class="sub">Tap Share in TikTok, Instagram, Safari or Google Maps and pick Place Bank. Or paste a link, type a name, or just describe it in your own words.</p>
-<div class="flow">"that new British pub on St Georges Terrace"      TikTok · Instagram · article · Maps link
-                      │                                          │
-                      └───────────────────┬──────────────────────┘
-                                          ▼
-                     works out which places you mean, checks each one
-                        on Apple Maps, finds the address, website,
-                          photos, opening hours and what it's like
-                                          ▼
-              ┌──────────────┬────────────┴─────────┬──────────────────┐
-              ▼              ▼                      ▼                  ▼
-         filed by city    on the map          nearby alerts       trip plans</div>
+  <p class="sub">Tap Share in any app and pick Place Bank, paste a link, or just describe it in your own words. It works out where you mean.</p>
+  <div class="tickets">
+    <div class="ticket"><span class="code">STEP · SAV</span><div class="no">01</div><h3>Save</h3><p>From TikTok, Instagram, Safari or Maps. Or type "the Thai place near the markets".</p><div class="tear">IN ▸ clip · link · words</div></div>
+    <div class="ticket"><span class="code">STEP · CHK</span><div class="no">02</div><h3>It checks</h3><p>Finds the real venue, confirms the address on Apple Maps, adds photos, website and opening hours.</p><div class="tear">GATE ▸ address verified</div></div>
+    <div class="ticket"><span class="code">STEP · ARR</span><div class="no">03</div><h3>You arrive</h3><p>Open the city and it's all there on a map, with a nudge when you walk past one.</p><div class="tear">OUT ▸ Perth · London · anywhere</div></div>
+  </div>
 </div></section>
 
+<div class="screens"><div class="wrap">
+  <p class="eyebrow">Inside the app</p>
+  <h2>Your city, sorted.</h2>
+  <p class="sub">Real screens from Place Bank. No account, no ads, and it shares with the people you choose.</p>
+  <div class="phones">
+    <figure><div class="phone"><img src="/assets/screens/describe.jpg" alt="Place Bank checking a place it found from a description" loading="lazy" width="368" height="800"></div><figcaption><b>Describe it, it finds it</b><span>Half-remembered names are fine.</span></figcaption></figure>
+    <figure><div class="phone"><img src="/assets/screens/place-hours.jpg" alt="A place page with photo, directions, website and hours" loading="lazy" width="368" height="800"></div><figcaption><b>Everything in one place</b><span>Photos, hours, reviews, directions.</span></figcaption></figure>
+    <figure><div class="phone"><img src="/assets/screens/city.jpg" alt="A city page listing saved places" loading="lazy" width="368" height="800"></div><figcaption><b>Filed by city</b><span>Open London, see everything you saved.</span></figcaption></figure>
+    <figure><div class="phone"><img src="/assets/screens/trip-flight.jpg" alt="A trip with dates, stay and flight" loading="lazy" width="368" height="800"></div><figcaption><b>Trips that plan themselves</b><span>Days, stays and flights together.</span></figcaption></figure>
+  </div>
+</div></div>
+
 <section><div class="wrap">
-  <h2>Everything you saved, right where you are</h2>
-  <p class="sub">Open a city when you land and every place you ever meant to try is there, on a map and in a list.</p>
+  <p class="eyebrow">Why it's different</p>
+  <h2>Built for the moment you get there.</h2>
+  <p class="sub">Saved posts get lost in a feed. Place Bank turns them into a map you actually use.</p>
   <div class="grid">
-    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></div>
-      <h3>Save from anywhere</h3><p>Clips, articles, screenshots, map links or a half-remembered description. It reads them and picks out each place.</p></div>
-    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
-      <h3>On the map, by city</h3><p>Addresses checked on Apple Maps, with photos, website, reviews and opening hours. London, Perth, wherever.</p></div>
-    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
-      <h3>Nearby nudges</h3><p>Walk past somewhere you saved and your phone tells you, so the good ones stop slipping by.</p></div>
-    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
-      <h3>Trips that plan themselves</h3><p>Pick your dates. It splits your places into days by area, finds stays near them and shows how to get round.</p></div>
-    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 14.5c2.8 0 6 1.7 6 5.5"/></svg></div>
-      <h3>Share with your people</h3><p>One list with your partner, or a trip code for friends. Send any place as a link that opens without the app.</p></div>
-    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
-      <h3>Tick off where you've been</h3><p>Rate it, add what you had, and keep a map of everywhere you've actually made it to.</p></div>
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg></div>
+      <h3>Save from anywhere</h3><p>Clips, articles, screenshots, map links or a ramble. It picks out every place mentioned.</p></div>
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+      <h3>Addresses checked</h3><p>Every place is matched on Apple Maps, so the pin is where the door is.</p></div>
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+      <h3>Nearby nudges</h3><p>Walk past somewhere you saved and your phone taps you on the shoulder.</p></div>
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <h3>Open now?</h3><p>Opening hours and whether it's kid friendly, dog friendly or BYO.</p></div>
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 14.5c2.8 0 6 1.7 6 5.5"/></svg></div>
+      <h3>Share with your people</h3><p>One list with your partner, a trip code for friends, or a link anyone can open.</p></div>
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h3>Tick off where you've been</h3><p>Rate it, note what you had, and build a map of everywhere you made it to.</p></div>
+  </div>
+</div></section>
+
+<section id="get" style="padding-top:0"><div class="wrap">
+  <div class="cta">
+    <img src="/assets/icon-512.png" alt="Place Bank app icon">
+    <div><h2>Get Place Bank</h2><p>Place Bank is in testing on iPhone and coming to the App Store. Want in early? Ask for an invite and we'll send a TestFlight link.</p></div>
+    <a class="btn primary" href="/support/#get">Ask for an invite</a>
   </div>
 </div></section>
 </main>
