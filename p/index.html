@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shared from Place Bank</title>
+<meta name="description" content="A place shared from Place Bank.">
+<meta property="og:title" content="Shared from Place Bank">
+<meta property="og:image" content="https://placebank.app/assets/og.jpg">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<header class="top"><div class="wrap narrow">
+  <a class="brand" href="/"><img src="/assets/icon-512.png" alt="">Place Bank</a>
+  <nav class="links"><a href="/">What is this?</a></nav>
+</div></header>
+<main class="wrap narrow share" id="app"><p class="note">Loading…</p></main>
+<footer><div class="wrap narrow">
+  <span>Shared with Place Bank</span>
+  <span><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></span>
+</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const API = "https://bbwjroytqxynborrqylr.supabase.co/functions/v1/placebank/s/";
+const app = document.getElementById("app");
+const code = (new URLSearchParams(location.search).get("c") || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const KINDS = { restaurant: "Restaurant", cafe: "Café", bar: "Bar", bakery: "Bakery", market: "Market", museum: "Museum", gallery: "Gallery",
+  exhibition: "Exhibition", sight: "Sight", park: "Park or garden", beach: "Beach", shop: "Shop", hotel: "Hotel", activity: "Activity", show: "Show or event", other: "Place" };
+const FEATURES = { kids: "Kid friendly", dogs: "Dog friendly", byo: "BYO", pub: "Pub", outdoor: "Outdoor seating", veggie: "Veggie options",
+  wheelchair: "Wheelchair access", bookings: "Takes bookings", walkIns: "Walk-ins only", views: "Views", lateNight: "Open late" };
+const DAYS = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+let share = null, map = null;
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const photoURL = (name) => API + code + "/" + encodeURIComponent(name);
+const hasPhoto = (p) => (p.photos || []).find((n) => (share.photos || []).includes(n));
+
+function time(m) {
+  m = ((m % 1440) + 1440) % 1440;
+  if (m === 0) return "midnight"; if (m === 720) return "midday";
+  const h = Math.floor(m / 60), mi = m % 60, h12 = h % 12 === 0 ? 12 : h % 12;
+  return mi ? `${h12}:${String(mi).padStart(2, "0")} ${h < 12 ? "am" : "pm"}` : `${h12} ${h < 12 ? "am" : "pm"}`;
+}
+function localNow(tz) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-GB", { timeZone: tz || undefined, weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date());
+    const get = (t) => parts.find((p) => p.type === t)?.value;
+    const day = ["", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(get("weekday"));
+    return { day, m: (parseInt(get("hour")) % 24) * 60 + parseInt(get("minute")) };
+  } catch { const d = new Date(); return { day: ((d.getDay() + 6) % 7) + 1, m: d.getHours() * 60 + d.getMinutes() }; }
+}
+function status(p) {
+  const H = p.hours || []; if (!H.length) return null;
+  const { day, m } = localNow(p.timeZoneID); const y = day === 1 ? 7 : day - 1;
+  let x = H.find((h) => h.day === day && h.open <= m && m < h.close);
+  if (x) return { open: true, text: x.open === 0 && x.close >= 1440 ? "Open 24 hours" : `Open · closes ${time(x.close)}` };
+  x = H.find((h) => h.day === y && h.close > 1440 && m < h.close - 1440);
+  if (x) return { open: true, text: `Open · closes ${time(x.close)}` };
+  const later = H.filter((h) => h.day === day && h.open > m).sort((a, b) => a.open - b.open)[0];
+  if (later) return { open: false, text: `Closed · opens ${time(later.open)}` };
+  for (let i = 1; i <= 7; i++) {
+    const d = ((day - 1 + i) % 7) + 1; const n = H.filter((h) => h.day === d).sort((a, b) => a.open - b.open)[0];
+    if (n) return { open: false, text: `Closed · opens ${i === 1 ? "tomorrow" : DAYS[d]} ${time(n.open)}` };
+  }
+  return { open: false, text: "Closed" };
+}
+function hoursTable(p) {
+  const H = p.hours || []; if (!H.length) return "";
+  const today = localNow(p.timeZoneID).day;
+  let rows = "";
+  for (let d = 1; d <= 7; d++) {
+    const ps = H.filter((h) => h.day === d).sort((a, b) => a.open - b.open);
+    const t = ps.length ? ps.map((h) => h.open === 0 && h.close >= 1440 ? "24 hours" : `${time(h.open)} to ${time(h.close)}`).join(", ") : "Closed";
+    rows += `<tr class="${d === today ? "today" : ""}"><td style="width:56px">${DAYS[d]}</td><td>${esc(t)}</td></tr>`;
+  }
+  return `<details><summary>Opening hours</summary><table class="hours">${rows}</table>${p.hoursNote ? `<p class="note">${esc(p.hoursNote)}</p>` : ""}<p class="note">Check with the venue before a special trip.</p></details>`;
+}
+function links(p) {
+  const q = [p.name, p.address].filter(Boolean).join(" ");
+  const out = [];
+  if (p.lat != null) out.push(`<a class="btn primary" href="https://maps.apple.com/?q=${encodeURIComponent(p.name)}&ll=${p.lat},${p.lon}">Apple Maps</a>`);
+  out.push(`<a class="btn ghost" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}">Google Maps · reviews</a>`);
+  if (p.website && /^https?:/i.test(p.website)) out.push(`<a class="btn ghost" href="${esc(p.website)}" rel="noopener">Website</a>`);
+  if (p.phone) out.push(`<a class="btn ghost" href="tel:${esc(p.phone.replace(/[^+\d]/g, ""))}">Call</a>`);
+  return `<div class="btns">${out.join("")}</div>`;
+}
+function get() {
+  return `<div class="get"><img src="/assets/icon-512.png" alt=""><p><b>Keep places like this in Place Bank</b><br><span class="note">Save them from any clip or article and find them again when you get there.</span></p><a class="btn ghost" href="/">About Place Bank</a></div>`;
+}
+function drawMap(el, points) {
+  if (!points.length || typeof L === "undefined") { el.remove(); return; }
+  map = L.map(el, { scrollWheelZoom: false, attributionControl: true });
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" }).addTo(map);
+  const b = [];
+  points.forEach((pt, i) => {
+    const mk = L.circleMarker([pt.lat, pt.lon], { radius: 9, color: "#1E2A2B", weight: 2, fillColor: pt.stay ? "#3F6E78" : "#E8703A", fillOpacity: 1 }).addTo(map);
+    mk.bindPopup(`<b>${esc(pt.name)}</b>`); if (pt.onclick) mk.on("click", pt.onclick);
+    b.push([pt.lat, pt.lon]);
+  });
+  if (b.length === 1) map.setView(b[0], 15); else map.fitBounds(b, { padding: [30, 30] });
+}
+
+function renderPlace(p, back) {
+  document.title = `${p.name} · Place Bank`;
+  const ph = hasPhoto(p); const st = status(p);
+  const where = [p.address || [p.neighbourhood, p.city].filter(Boolean).join(", "), p.priceLevel].filter(Boolean).join(" · ");
+  const feats = (p.features || []).map((f) => FEATURES[f]).filter(Boolean);
+  app.innerHTML = `
+    ${back ? `<p><a href="#" id="back">‹ Back to the trip</a></p>` : ""}
+    ${ph ? `<img class="photo" src="${photoURL(ph)}" alt="">` : ""}
+    <div class="kind">${esc(KINDS[p.kind] || "Place")}${p.neighbourhood ? " · " + esc(p.neighbourhood) : ""}</div>
+    <h1>${esc(p.name)}</h1>
+    <p class="where">${esc(where)}</p>
+    ${st ? `<p class="open ${st.open ? "yes" : "no"}">${esc(st.text)}</p>` : ""}
+    ${feats.length ? `<div class="chips">${feats.map((f) => `<span class="chip">${esc(f)}</span>`).join("")}</div>` : ""}
+    ${p.summary ? `<p>${esc(p.summary)}</p>` : ""}
+    ${p.tips ? `<div class="why"><b>Why it was saved</b>${esc(p.tips)}</div>` : ""}
+    ${links(p)}
+    ${hoursTable(p)}
+    <div class="map" id="map"></div>
+    ${p.sourceURL && /^https?:/i.test(p.sourceURL) ? `<p class="note">Found in <a href="${esc(p.sourceURL)}" rel="noopener">${esc(p.sourceLabel || "the original post")}</a></p>` : ""}
+    ${back ? "" : get()}`;
+  if (back) document.getElementById("back").onclick = (e) => { e.preventDefault(); history.back(); };
+  drawMap(document.getElementById("map"), p.lat != null ? [{ lat: p.lat, lon: p.lon, name: p.name }] : []);
+  window.scrollTo(0, 0);
+}
+
+function row(p) {
+  const ph = hasPhoto(p);
+  return `<a class="place-row" href="#${encodeURIComponent(p.id)}">${ph ? `<img src="${photoURL(ph)}" alt="" loading="lazy">` : `<div class="ph"></div>`}
+    <div><b>${esc(p.name)}</b><small>${esc([KINDS[p.kind] || "Place", p.neighbourhood].filter(Boolean).join(" · "))}</small>
+    ${status(p) ? `<small class="open ${status(p).open ? "yes" : "no"}">${esc(status(p).text)}</small>` : ""}</div></a>`;
+}
+function renderTrip(t) {
+  document.title = `${t.title || t.city} · Place Bank`;
+  const byId = Object.fromEntries((t.places || []).map((p) => [p.id, p]));
+  const fmt = (s) => { try { return new Date(s).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" }); } catch { return ""; } };
+  let html = `<div class="kind">Trip</div><h1>${esc(t.title || t.city)}</h1>`;
+  if (t.start && t.end) html += `<p class="where">${esc(fmt(t.start))} to ${esc(fmt(t.end))}</p>`;
+  html += `<div class="map" id="map"></div>`;
+  if (t.stay) html += `<h2 class="serif" style="font-size:22px;margin:22px 0 4px">Staying at</h2>${row(Object.assign({ id: "stay" }, t.stay))}`;
+  const planned = new Set();
+  (t.days || []).forEach((ids, i) => {
+    const ps = ids.map((id) => byId[id]).filter(Boolean); if (!ps.length) return;
+    ps.forEach((p) => planned.add(p.id));
+    const day = t.start ? fmt(new Date(new Date(t.start).getTime() + i * 86400000)) : "";
+    html += `<h2 class="serif" style="font-size:22px;margin:22px 0 4px">Day ${i + 1}${day ? " · " + esc(day) : ""}</h2>` + ps.map(row).join("");
+  });
+  const rest = (t.places || []).filter((p) => !planned.has(p.id));
+  if (rest.length) html += `<h2 class="serif" style="font-size:22px;margin:22px 0 4px">${planned.size ? "Also saved" : "Places"}</h2>` + rest.map(row).join("");
+  app.innerHTML = html + get();
+  const pts = (t.places || []).filter((p) => p.lat != null).map((p) => ({ lat: p.lat, lon: p.lon, name: p.name, onclick: () => (location.hash = encodeURIComponent(p.id)) }));
+  if (t.stay && t.stay.lat != null) pts.push({ lat: t.stay.lat, lon: t.stay.lon, name: t.stay.name, stay: true });
+  drawMap(document.getElementById("map"), pts);
+}
+
+function route() {
+  if (!share) return;
+  if (map) { map.remove(); map = null; }
+  if (share.kind === "place") return renderPlace(share.data, false);
+  const id = decodeURIComponent(location.hash.slice(1));
+  const t = share.data;
+  const p = id === "stay" ? t.stay : (t.places || []).find((x) => x.id === id);
+  if (id && p) renderPlace(p, true); else renderTrip(t);
+}
+
+async function load() {
+  if (!code) { app.innerHTML = `<h1>Nothing here</h1><p>This link is missing its code.</p>` + get(); return; }
+  try {
+    const r = await fetch(API + code);
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || "Not found");
+    share = j; route();
+  } catch (e) {
+    app.innerHTML = `<h1>This link isn't working</h1><p>${esc(e.message || "It may have been removed.")}</p>` + get();
+  }
+}
+window.addEventListener("hashchange", route);
+load();
+</script>
+</body>
+</html>
