@@ -150,7 +150,7 @@ function renderTrip(t) {
   document.title = `${t.title || t.city} · Place Bank`;
   const byId = Object.fromEntries((t.places || []).map((p) => [p.id, p]));
   const fmt = (s) => { try { return new Date(s).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" }); } catch { return ""; } };
-  let html = `<div class="kind">Trip</div><h1>${esc(t.title || t.city)}</h1>`;
+  let html = `<div class="kind">${esc(t.label || "Trip")}</div><h1>${esc(t.title || t.city)}</h1>`;
   if (t.start && t.end) html += `<p class="where">${esc(fmt(t.start))} to ${esc(fmt(t.end))}</p>`;
   html += `<div class="map" id="map"></div>`;
   if (t.stay) html += `<h2 class="serif" style="font-size:22px;margin:22px 0 4px">Staying at</h2>${row(Object.assign({ id: "stay" }, t.stay))}`;
